@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Restart App on EC2
 
 on:
   push:
@@ -6,18 +6,16 @@ on:
       - master
 
 jobs:
-  deploy:
+  restart:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH and deploy
+      - name: Restart PM2 app on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
-            cd ~/node-todo-cicd
-            git fetch origin
-            git reset --hard origin/master
-            pm2 restart app
+            pm2 restart node-todo
