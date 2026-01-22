@@ -3,29 +3,34 @@ name: CI Pipeline
 on : 
  workflow_dispatch:
 
+#on:
+  #push:
+    #branches:
+      #- main
+
 
 jobs :
     build : 
-        runs-on : ubuntu-latets
+        runs-on: ubuntu-latets
 
         steps :
           - name : checkout code
-            uses : action/ckeckout@v4
+            uses : actions/ckeckout@v4
 
 
           - name : setup node-js 
-            uses : action/setupt-node@v4
+            uses : actions/setupt-node@v4
             with : 
               node-version: 18
 
           - name : Install dependencies 
-            run  : npm insatll    
+            run: npm insatll    
 
           - name : run tests 
-            run  : npm test
+            run: npm test
 
           - name : Pipeline Fail message  
             if : failure()
-            run : echo "Your Pipeline Fail"    
+            run: echo "Your Pipeline Fail"    
 
 
