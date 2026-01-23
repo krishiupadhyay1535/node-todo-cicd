@@ -21,6 +21,6 @@ jobs:
             key: ${{ secrets.EC2.KEY }}
             script: |
               cd ~/node-todo-cicd
-              git push origin master
+              git pull origin master
               npm install
               pm2 restart node
