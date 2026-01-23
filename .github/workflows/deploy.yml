@@ -1,12 +1,12 @@
 name: Deploy to EC2 with PM2
 
-on:
-  workflow_dispatch:
-
 #on:
-  #push:
-    #branches:
-      #- master
+  #workflow_dispatch:
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
