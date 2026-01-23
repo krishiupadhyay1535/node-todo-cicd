@@ -17,3 +17,23 @@ or Run by docker compose
 
 test
 
+
+#  1.(auto deploy)
+
+#on:
+  #workflow_dispatch:
+
+on:
+  push:
+    branches:
+      - master
+
+#  1.(Trigger it manually)
+
+on:
+  workflow_dispatch:
+
+#on:
+  #push:
+    #branches:
+      #- master

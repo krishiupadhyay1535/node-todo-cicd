@@ -1,12 +1,12 @@
 name: CD - Deploy using shimataro
 
-on:
-  workflow_dispatch:
-
 #on:
-  #push:
-    #branches:
-      #- master
+  #workflow_dispatch:
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
