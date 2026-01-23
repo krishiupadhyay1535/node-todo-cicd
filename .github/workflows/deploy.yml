@@ -13,14 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: deploy on EC2 
+      - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USER }}
-            key: ${{ secrets.EC2.KEY }}
-            script: |
-              cd ~/node-todo-cicd
-              git pull origin master
-              npm install
-              pm2 restart node
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd ~/node-todo-cicd
+            git pull origin master
+            npm install
+            pm2 restart node-app
