@@ -1,12 +1,12 @@
 name: CI Pipeline
 
-#on:
-  #workflow_dispatch:
-
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+
+#on:
+  #push:
+    #branches:
+      #- master
 
 jobs:
   build:
@@ -19,8 +19,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          #node-version: 18
-          node-version: 6.9.0
+          node-version: 18
+          #node-version: 6.9.0  ( old vertion that use in node todo app )
 
 
       - name: Install dependencies
