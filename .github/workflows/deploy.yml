@@ -1,12 +1,12 @@
 name: Deploy to EC2 with PM2
 
-#on:
-  #workflow_dispatch:
-
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+
+#on:
+  #push:
+    #branches:
+      #- master
 
 jobs:
   deploy:
@@ -26,5 +26,5 @@ jobs:
             cd ~/node-todo-cicd
             git pull origin master
             npm install
-            pm2 restart node-app
+            pm2 restart node-appss
             df -h
