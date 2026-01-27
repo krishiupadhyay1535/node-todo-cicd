@@ -3,24 +3,21 @@ pipeline {
 
     stages {
 
-        stage('stage One'){
-            steps{
-                echo "Hello From stage One "
-                sh 'date'
+        stage('checkout code'){
+            steps {
+                checkout scm
             }
         }
 
-        stage('stage Two'){
-            steps{
-                echo "Next stage is file"
-                sh 'pm2 ls'
+        stage('install Dependencies'){
+            steps {
+                sh 'npm install'
             }
         }
 
-        stage('stage Three'){
-            steps{
-                echo "exit 1"
-                sh 'pwd'
+        stage('Run Test'){
+            steps {
+                sh 'npm test'
             }
         }
     } 
