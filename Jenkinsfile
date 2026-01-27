@@ -13,13 +13,13 @@ pipeline {
         stage('stage Two'){
             steps{
                 echo "Hello From Stage Two"
-                sh 'exit 1'
+                sh 'Next stage is file '
             }
         }
 
         stage('stage Three'){
             steps{
-                echo "Hello From Stage Three"
+                echo "exit 1"
                 sh 'pwd'
             }
         }
