@@ -3,31 +3,31 @@ pipeline {
 
     stages {
 
-        stage('checkout code'){
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('install Dependencies'){
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
 
-        stage('Run Test'){
+        stage('Run Tests') {
             steps {
                 sh 'npm test'
             }
         }
 
-        stage('deploy (pm2)'){
+        stage('Deploy (PM2)') {
             steps {
                 sh '''
-                pm2 restart todo-app || \
-                pm2 start app.js --name todo-app
+                  pm2 restart todo-app || \
+                  pm2 start app.js --name todo-app
                 '''
             }
         }
-    } 
+    }
 }
