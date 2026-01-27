@@ -20,5 +20,14 @@ pipeline {
                 sh 'npm test'
             }
         }
+
+        stage('deploy (pm2)'){
+            steps {
+                sh '''
+                pm2 restart todo-app || \
+                pm2 start app.js --name todo-app
+                '''
+            }
+        }
     } 
 }

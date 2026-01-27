@@ -28,7 +28,7 @@ on:
     branches:
       - master
 
-#  1.(Trigger it manually)
+#  2.(Trigger it manually)
 
 on:
   workflow_dispatch:
