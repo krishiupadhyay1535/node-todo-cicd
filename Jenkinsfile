@@ -24,8 +24,8 @@ pipeline {
         stage('Deploy (PM2)') {
             steps {
                 sh '''
-                  pm2 restart todo-app || \
-                  pm2 start app.js --name todo-app
+                  pm2 delete node-app || true
+                  pm2 start app.js --name node-app
                 '''
             }
         }
