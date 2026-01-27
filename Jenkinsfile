@@ -3,28 +3,25 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
-            steps {
-                git 'git@github.com:krishiupadhyay1535/node-todo-cicd.git'
+        stage('stage One'){
+            steps{
+                echo "Hello From stage One "
+                sh 'date'
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
+        stage('stage Two'){
+            steps{
+                echo "Hello From Stage Two"
+                sh 'ls'
             }
         }
 
-        stage('Test') {
-            steps {
-                sh 'npm test || true'
+        stage('stage Three'){
+            steps{
+                echo "Hello From Stage Three"
+                sh 'pwd'
             }
         }
-
-        stage('Start App') {
-            steps {
-                sh 'pm2 restart todo-app || pm2 start app.js --name todo-app'
-            }
-        }
-    }
+    } 
 }
