@@ -12,8 +12,8 @@ pipeline {
 
         stage('stage Two'){
             steps{
-                echo "Hello From Stage Two"
-                sh 'Next stage is file '
+                echo "Next stage is file"
+                sh 'pm2 ls'
             }
         }
 
