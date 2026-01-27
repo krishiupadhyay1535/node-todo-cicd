@@ -13,7 +13,7 @@ pipeline {
         stage('stage Two'){
             steps{
                 echo "Hello From Stage Two"
-                sh 'abcdefg'
+                sh 'exit 1'
             }
         }
 
