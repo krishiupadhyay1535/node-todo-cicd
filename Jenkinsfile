@@ -5,36 +5,29 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "Cloning repository from GitHub..."
+                echo "Clone Repo"
                 checkout scm
             }
         }
 
-        stage('Install Dependencies (Jenkins)') {
+        stage('Install Dependencies (Jenkins Workspace)') {
             steps {
-                echo "Installing dependencies in Jenkins workspace..."
+                echo "Installing npm dependencies"
                 sh 'npm install || true'
             }
         }
 
-        stage('Deploy to EC2') {
+        stage('Deploy Views Only to EC2') {
             steps {
-                echo "Deploying application to EC2 server..."
+                echo "Deploying ONLY views folder to EC2..."
 
                 sh """
-                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@34.240.97.104 '
-                    if [ ! -d ~/node-todo-cicd ]; then
-                        git clone https://github.com/krishiupadhyay1535/node-todo-cicd.git ~/node-todo-cicd
-                    fi
+                rsync -avz --delete \
+                -e "ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no" \
+                views/ ubuntu@34.240.97.104:/home/ubuntu/node-todo-cicd/views/
 
-                    cd ~/node-todo-cicd &&
-                    git pull origin master &&
-                    npm install &&
-                    if pm2 list | grep -q node-todo-app; then
-                        pm2 restart node-todo-app
-                    else
-                        pm2 start app.js --name node-todo-app
-                    fi
+                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@34.240.97.104 '
+                    pm2 restart node-todo-app
                 '
                 """
             }
