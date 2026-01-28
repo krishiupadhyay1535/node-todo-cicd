@@ -1,32 +1,25 @@
-pipeline {
+pipeline{
     agent any
 
     stages {
-
-        stage('Checkout Code') {
+        stage('fisrt stage'){
             steps {
-                checkout scm
+                echo "hello from first stage "
+                sh 'pwd'
             }
         }
 
-        stage('Install Dependencies') {
+        stage ('second stage'){
             steps {
-                sh 'npm install'
+                echo "hii from second stage "
+                sh 'ls'
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                sh 'npm test'
-            }
-        }
-
-        stage('Deploy (PM2)') {
-            steps {
-                sh '''
-                  pm2 delete node-app || true
-                  pm2 start app.js --name node-app
-                '''
+        stage('last stage'){
+            steps{
+                echo "last stage say hii"
+                sh 'df -h'
             }
         }
     }
