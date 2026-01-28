@@ -16,7 +16,7 @@ pipeline {
         }
 
         stage('Check location'){
-            stages{
+            steps{
                 echo "my loction on logs "
                 sh 'pwd'
                 sh 'whoami'
