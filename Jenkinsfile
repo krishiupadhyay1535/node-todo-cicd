@@ -1,25 +1,34 @@
 pipeline{
     agent any
 
+    env {
+        APP_NAME = "node-todo-app"
+        APP_FILE = "app.js"
+    }
+
     stages {
-        stage('fisrt stage'){
-            steps {
-                echo "hello from first stage "
-                sh 'pwd'
+
+        stage ('Checkout code'){
+            stages {
+                checkout scm 
             }
         }
 
-        stage ('second stage'){
-            steps {
-                echo "hii from second stage "
-                sh 'ls'
+        stage ('Install Dependencies'){
+            stages {
+                sh 'npm install'
             }
         }
 
-        stage('last stage'){
-            steps{
-                echo "last stage say hii"
-                sh 'df -h'
+        stage ('Start app with pm2'){
+            steps {
+                sh '''
+                if pm2 list | grep -q ${APP_NAME}; then
+                   pm2 restart ${APP_FILE}
+                else 
+                   pm2 start ${APP_FILE} --name ${APP_NAME}
+                fi      
+                '''
             }
         }
     }
