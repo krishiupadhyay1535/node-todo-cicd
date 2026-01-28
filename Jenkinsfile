@@ -1,10 +1,7 @@
 pipeline{
     agent any
 
-    environment {
-        APP_NAME = "node-todo-app"
-        APP_FILE = "app.js"
-    }
+    
 
     stages {
 
