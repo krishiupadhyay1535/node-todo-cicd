@@ -15,6 +15,15 @@ pipeline {
             }
         }
 
+        stage('Check location'){
+            stages{
+                echo "my loction on logs "
+                sh 'pwd'
+                sh 'whoami'
+                sh 'ls'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 sh """
