@@ -23,14 +23,14 @@ pipeline{
         stage ('Start app with pm2'){
             steps {
                 sh '''
-                ssh -o StrictHostKeyChecking=no ubuntu@localhost "
-                  cd ~/node-todo-cicd &&
-                  npm install &&
-                  if pm2 list | grep -q node-todo-app; then 
-                  pm2 restart node-todo-app 
-                  else 
-                    pm2 start app.js --name node-todo-app
-                    fi
+                docker exec -u root jenkins bash -c "ssh -i /root/practise-1-server-key.pem -o StrictHostKeyChecking=no ubuntu@34.240.97.104 '
+            cd ~/node-todo-cicd &&
+            npm install &&
+            if pm2 list | grep -q node-todo-app; then
+                pm2 restart node-todo-app
+            else
+                pm2 start app.js --name node-todo-app
+            fi
 
                     "
                 '''
