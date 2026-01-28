@@ -23,7 +23,7 @@ pipeline{
         stage ('Start app with pm2'){
             steps {
                 sh '''
-                ssh -i /root/practise-1-server-key.pem -o StrictHostKeyChecking=no ubuntu@34.240.97.104 << 'EOF'
+                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@34.240.97.104 << 'EOF'
             cd ~/node-todo-cicd
             npm install
             if pm2 list | grep -q node-todo-app; then
