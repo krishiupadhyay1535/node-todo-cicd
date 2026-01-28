@@ -23,11 +23,16 @@ pipeline{
         stage ('Start app with pm2'){
             steps {
                 sh '''
-                if pm2 list | grep -q ${APP_NAME}; then
-                   pm2 restart ${APP_FILE}
-                else 
-                   pm2 start ${APP_FILE} --name ${APP_NAME}
-                fi      
+                ssh -o StrictHostKeyChecking=no ubuntu@localhost "
+                  cd ~/node-todo-cicd &&
+                  npm install &&
+                  if pm2 list | grep -q node-todo-app; then 
+                  pm2 restart node-todo-app 
+                  else 
+                    pm2 start app.js --name node-todo-app
+                    fi
+
+                    "
                 '''
             }
         }
