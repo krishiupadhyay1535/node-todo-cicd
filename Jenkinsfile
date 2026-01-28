@@ -1,7 +1,7 @@
 pipeline{
     agent any
 
-    env {
+    environment {
         APP_NAME = "node-todo-app"
         APP_FILE = "app.js"
     }
@@ -9,13 +9,13 @@ pipeline{
     stages {
 
         stage ('Checkout code'){
-            stages {
-                checkout scm 
+            steps {
+                    checkout scm 
             }
         }
 
         stage ('Install Dependencies'){
-            stages {
+            steps {
                 sh 'npm install'
             }
         }
