@@ -26,7 +26,7 @@ pipeline {
                 -e "ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no" \
                 views/ ubuntu@108.129.114.199:/home/ubuntu/node-todo-cicd/views/
 
-                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@34.240.97.104 '
+                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@108.129.114.199 '
                     pm2 restart node-todo-app
                 '
                 """
