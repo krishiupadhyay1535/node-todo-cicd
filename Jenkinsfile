@@ -10,27 +10,27 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies (Jenkins Workspace)') {
+        stage('Deploy docker image') {
             steps {
                 echo "Installing npm dependencies"
-                sh 'npm install || true'
+                sh '''
+                docker build -t krishi2210/todo-app:latest .
+                '''
             }
         }
 
-        stage('Deploy Views Only to EC2') {
+        stage('Deploy Container') {
             steps {
-                echo "Deploying ONLY views folder to EC2..."
+                echo "Container Will Run Here"
+                sh '''
+                    docker stop todo-container || true 
+                    docker rm todo-container || true 
 
-                sh """
-                rsync -avz --delete \
-                -e "ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no" \
-                views/ ubuntu@108.129.114.199:/home/ubuntu/node-todo-cicd/views/
-
-                ssh -i /var/jenkins_home/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@108.129.114.199 '
-                    pm2 restart node-app
-                '
-                """
-            }
+                    docker run -d \
+                    -p 8000:8000 \
+                        --name todo-container \
+                        krishi2210/todo-container:app-latest
+                '''
         }
     }
 }
