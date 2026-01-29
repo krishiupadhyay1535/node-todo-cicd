@@ -31,6 +31,7 @@ pipeline {
                         --name todo-container \
                         krishi2210/todo-container:app-latest
                 '''
-        }
+            }
+        } 
     }
 }
