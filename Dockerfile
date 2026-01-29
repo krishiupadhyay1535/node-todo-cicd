@@ -1,16 +1,14 @@
-# Node Base Image
-FROM node:12.2.0-alpine
+FROM node:18-alpine 
 
-#Working Directry
-WORKDIR /node
+WORKDIR /app
 
-#Copy the Code
+COPY package-lock.json ./
+
+RUN npm install 
+
 COPY . .
 
-#Install the dependecies
-RUN npm install
-RUN npm run test
-EXPOSE 8000
+EXPOSE 8000 
 
-#Run the code
-CMD ["node","app.js"]
+CMD [ "node","app.js" ]
+
