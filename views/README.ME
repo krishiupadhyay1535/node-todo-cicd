@@ -1,0 +1,169 @@
+📌 Node.js Todo App – CI/CD with Jenkins & Docker
+
+This project is a simple Node.js Todo Application deployed using Docker and automated through a Jenkins CI/CD pipeline.
+The pipeline builds the Docker image, pushes it to a registry, and deploys the container on an AWS EC2 instance.
+
+🚀 Features
+
+Node.js Todo application
+
+Dockerized application
+
+Jenkins Declarative Pipeline
+
+Automated build, test, and deployment
+
+Deployed on AWS EC2
+
+🛠️ Tech Stack
+
+Node.js
+
+Express.js
+
+Docker
+
+Jenkins
+
+GitHub
+
+AWS EC2
+
+Linux (Ubuntu)
+
+📂 Project Structure
+node-todo-app/
+│
+├── app.js
+├── package.json
+├── Dockerfile
+├── Jenkinsfile
+├── views/
+├── public/
+└── README.md
+
+⚙️ Prerequisites
+
+Make sure you have installed:
+
+Git
+
+Node.js & npm
+
+Docker
+
+Jenkins
+
+AWS EC2 Instance (Ubuntu)
+
+🔧 Installation (Local Setup)
+git clone https://github.com/your-username/node-todo-app.git
+cd node-todo-app
+npm install
+npm start
+
+
+Open browser:
+
+http://localhost:3000
+
+🐳 Docker Setup
+
+Build Docker Image:
+
+docker build -t yourdockerhubusername/todo-app .
+
+
+Run Container:
+
+docker run -d -p 3000:3000 --name todo-container yourdockerhubusername/todo-app
+
+
+Check Running Container:
+
+docker ps
+
+🔁 Jenkins CI/CD Pipeline Flow
+GitHub Push
+   ↓
+Jenkins Triggered
+   ↓
+Install Dependencies
+   ↓
+Run Tests
+   ↓
+Build Docker Image
+   ↓
+Push Image to DockerHub
+   ↓
+Deploy on EC2
+
+📄 Sample Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t yourdockerhubusername/todo-app .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh '''
+                docker stop todo-container || true
+                docker rm todo-container || true
+                docker run -d -p 3000:3000 --name todo-container yourdockerhubusername/todo-app
+                '''
+            }
+        }
+    }
+}
+
+🌐 Access Application
+
+After deployment, open:
+
+http://EC2-PUBLIC-IP:3000
+
+📸 Screenshots
+
+Add screenshots here:
+
+Jenkins Pipeline Success
+
+Docker Images
+
+Running Container
+
+Application UI
+
+✅ Future Improvements
+
+Add automated tests
+
+Use Docker Compose
+
+Add Nginx reverse proxy
+
+Implement HTTPS
+
+Add monitoring
+
+👤 Author
+
+Krishi Upadhyay
+DevOps / Cloud Enthusiast
