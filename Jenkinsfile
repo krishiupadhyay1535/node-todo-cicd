@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "krishi2210/todo-app"
+        CONTAINER_NAME = "todo-app"
     }
 
     stages {
