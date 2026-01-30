@@ -4,14 +4,14 @@ pipeline {
     environment {
         IMAGE_NAME = "krishi2210/todo-app"
         CONTAINER_NAME = "todo-app"
-        REPO_URL = "https://github.com/krishiupadhyay1535/node-todo-cicd.git"
+        
     }
 
     stages {
 
         stage('Checkout Code') {
             steps {
-                git url: "$REPO_URL", branch: "master"
+                checkout scm
             }
         }
 
