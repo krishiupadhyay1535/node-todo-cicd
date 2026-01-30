@@ -48,5 +48,19 @@ pipeline {
                 sh 'docker pull $IMAGE_NAME:latest'
             }
         }
+
+                stage('Run Container') {
+            steps {
+                sh '''
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
+
+                docker run -d \
+                -p 8000:8000 \
+                --name $CONTAINER_NAME \
+                $IMAGE_NAME:latest
+                '''
+            }
+        }
     }
 }
