@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    environment {
+
+        IMAGE_NAME = "krishi2210/todo-app"
+        CONTAINER_NAME = "todo-app"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -12,9 +18,9 @@ pipeline {
 
         stage('Deploy docker image') {
             steps {
-                echo "Installing npm dependencies"
+                echo "Docker Build "
                 sh '''
-                docker build -t krishi2210/todo-app:latest .
+                docker build -t $IMAGE_NAME:latest .
                 '''
             }
         }
@@ -23,13 +29,13 @@ pipeline {
             steps {
                 echo "Container Will Run Here"
                 sh '''
-                    docker stop todo-container || true 
-                    docker rm todo-container || true 
+                    docker stop $CONTAINER_NAME || true 
+                    docker rm $CONTAINER_NAME || true 
 
                     docker run -d \
                     -p 8000:8000 \
-                        --name todo-container \
-                        krishi2210/todo-container:app-latest
+                        --name CONTAINER_NAME \
+                        $IMAGE_NAME:latest
                 '''
             }
         } 
