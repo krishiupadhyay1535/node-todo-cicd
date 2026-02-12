@@ -15,18 +15,18 @@ pipeline {
             }
         }
 
-        // stage('run Tests (CI)') {
-        //     steps {
-        //         sh '''
-        //         echo "Running tests inside Node container..."
-        //         docker run --rm \
-        //           -v $PWD:/app \
-        //           -w /app \
-        //           node:18 \
-        //           npm install && npm test || exit 1
-        //         '''
-        //     }
-        // }
+        stage('run Tests (CI)') {
+            steps {
+                sh '''
+                echo "Running tests inside Node container..."
+                docker run --rm \
+                  -v $PWD:/app \
+                  -w /app \
+                  node:18 \
+                  npm install && npm test || exit 1
+                '''
+            }
+        }
 
 
         stage('Build Docker Image') {
@@ -69,7 +69,7 @@ pipeline {
                   -p 8000:8000 \
                   --name $CONTAINER_NAME \
                   $IMAGE_NAME:latest
-                ''
+                '''
             }
         }
     }
