@@ -14,25 +14,25 @@ pipeline {
             }
         }
 
-        // stage('run test '){
-        //     steps {
-        //         sh '''
-        //         echo "Install dependencies.."
-        //         npm install
-
-        //         echo "Running test"
-        //         npm test 
-        //         '''
-        //     }
-        // }
-
-
 
         stage('Build Image') {
             steps {
                 sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
+
+        stage('run test '){
+            steps {
+                sh '''
+                echo "Install dependencies.."
+                npm install
+
+                echo "Running test"
+                npm test 
+                '''
+            }
+        }
+
 
         stage('DockerHub Login') {
             steps {
