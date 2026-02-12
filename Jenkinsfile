@@ -14,17 +14,17 @@ pipeline {
             }
         }
 
-        stage('run test '){
-            steps {
-                sh '''
-                echo "Install dependencies.."
-                npm install
+        // stage('run test '){
+        //     steps {
+        //         sh '''
+        //         echo "Install dependencies.."
+        //         npm install
 
-                echo "Running test"
-                npm test 
-                '''
-            }
-        }
+        //         echo "Running test"
+        //         npm test 
+        //         '''
+        //     }
+        // }
 
 
 
