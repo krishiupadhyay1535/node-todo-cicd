@@ -15,7 +15,7 @@ pipeline {
             }
         }
 
-        // stage('Run Tests (CI)') {
+        // stage('run Tests (CI)') {
         //     steps {
         //         sh '''
         //         echo "Running tests inside Node container..."
@@ -27,6 +27,7 @@ pipeline {
         //         '''
         //     }
         // }
+
 
         stage('Build Docker Image') {
             steps {
