@@ -23,7 +23,7 @@ pipeline {
                   -v $PWD:/app \
                   -w /app \
                   node:18 \
-                  npm install && npm test
+                  npm install && npm test || exit 1
                 '''
             }
         }
