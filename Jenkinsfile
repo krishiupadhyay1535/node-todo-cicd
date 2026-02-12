@@ -69,7 +69,7 @@ pipeline {
                   -p 8000:8000 \
                   --name $CONTAINER_NAME \
                   $IMAGE_NAME:latest
-                '''
+                ''
             }
         }
     }
