@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-        // stage('run test '){
+        // stage('Run test '){
         //     steps {
         //         sh '''
         //         echo "Install dependencies.."
