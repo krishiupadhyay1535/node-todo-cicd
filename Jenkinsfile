@@ -15,30 +15,24 @@ pipeline {
             }
         }
 
-        stage('Debug Workspace') {
+        stage('Debug') {
     steps {
         sh '''
-        echo "PWD is:"
         pwd
-
-        echo "Listing files:"
         ls -la
         '''
     }
 }
 
 
-        stage('Install Dependencies & Run Tests (CI)') {
+        stage('Run Tests') {
     steps {
         sh '''
-        node -v
-        npm -v
         npm install
         npm test
         '''
     }
 }
-
 
 
         // stage('Install Dependencies & Run Tests (CI)') {
