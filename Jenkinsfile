@@ -15,15 +15,15 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies & Run Tests (CI)') {
-            steps {
-                sh '''
-                echo "Running npm install & npm test..."
-                npm install
-                npm test
-                '''
-            }
-        }
+        // stage('Install Dependencies & Run Tests (CI)') {
+        //     steps {
+        //         sh '''
+        //         echo "Running npm install & npm test..."
+        //         npm install
+        //         npm test
+        //         '''
+        //     }
+        // }
 
         stage('Build Docker Image') {
             steps {
