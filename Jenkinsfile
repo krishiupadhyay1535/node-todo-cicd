@@ -15,20 +15,15 @@ pipeline {
             }
         }
 
-        // stage('run Tests (CI)') {
-        //     steps {
-        //         sh '''
-        //         echo "Running tests inside Node container..."
-        //         docker run --rm \
-        //           -v $PWD:/app \
-        //           -w /app \
-        //           node:18 \
-        //           npm install && npm test || exit 1
-        //         '''
-        //     }
-        // }
-        
-
+        stage('Install Dependencies & Run Tests (CI)') {
+            steps {
+                sh '''
+                echo "Running npm install & npm test..."
+                npm install
+                npm test
+                '''
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
@@ -77,41 +72,47 @@ pipeline {
 
     post {
         failure {
-            mail to: 'krishiupadhyay2@gmail.com',
-                 subject: "❌ Jenkins Pipeline FAILED: ${JOB_NAME}",
-                 body: """
-                 Hello Sir,
+            emailext(
+                to: 'krishiupadhyay2@gmail.com',
+                subject: "❌ Jenkins FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: """
+Hello Sir,
 
-                 The CI/CD pipeline has FAILED.
+Pipeline FAILED ❌
 
-                 Job Name   : ${JOB_NAME}
-                 Build No   : ${BUILD_NUMBER}
-                 Status     : FAILED
+Job Name : ${JOB_NAME}
+Build No : ${BUILD_NUMBER}
+Status   : FAILED
 
-                 Deployment was stopped to protect the running container.
+Reason:
+- npm test failed OR build error
+- Old container is still running safely
 
-                 Regards,
-                 Jenkins
-                 """
+Regards,
+Jenkins
+"""
+            )
         }
 
         success {
-            mail to: 'krishiupadhyay2@gmail.com',
-                 subject: "✅ Jenkins Pipeline SUCCESS: ${JOB_NAME}",
-                 body: """
-                 Hello Sir,
+            emailext(
+                to: 'krishiupadhyay2@gmail.com',
+                subject: "✅ Jenkins SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
+                body: """
+Hello Sir,
 
-                 The CI/CD pipeline completed successfully.
+Pipeline SUCCESS ✅
 
-                 Job Name   : ${JOB_NAME}
-                 Build No   : ${BUILD_NUMBER}
-                 Status     : SUCCESS
+Job Name : ${JOB_NAME}
+Build No : ${BUILD_NUMBER}
+Status   : SUCCESS
 
-                 Application deployed successfully.
+Application deployed successfully.
 
-                 Regards,
-                 Jenkins
-                 """
+Regards,
+Jenkins
+"""
+            )
         }
     }
 }
