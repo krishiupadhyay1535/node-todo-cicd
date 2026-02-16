@@ -15,20 +15,31 @@ pipeline {
             }
         }
 
+        stage('Debug Workspace') {
+    steps {
+        sh '''
+        echo "PWD is:"
+        pwd
 
-stage('Install Dependencies & Run Tests (CI)') {
+        echo "Listing files:"
+        ls -la
+        '''
+    }
+}
+
+
+        stage('Install Dependencies & Run Tests (CI)') {
     steps {
         sh '''
         echo "Running npm install & npm test inside Node container..."
         docker run --rm \
           -v $PWD:/workspace \
-          -w /workspace \
+          -w /workspace/node-todo-cicd \
           node:18 \
           sh -c "npm install && npm test"
         '''
     }
 }
-
 
 
         // stage('Install Dependencies & Run Tests (CI)') {
