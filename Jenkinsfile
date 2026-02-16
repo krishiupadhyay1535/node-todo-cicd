@@ -33,13 +33,14 @@ pipeline {
         sh '''
         echo "Running npm install & npm test inside Node container..."
         docker run --rm \
-          -v $PWD:/workspace \
+          -v "$PWD:/workspace" \
           -w /workspace \
           node:18 \
           sh -c "npm install && npm test"
         '''
     }
 }
+
 
 
 
