@@ -34,12 +34,13 @@ pipeline {
         echo "Running npm install & npm test inside Node container..."
         docker run --rm \
           -v $PWD:/workspace \
-          -w /workspace/node-todo-cicd \
+          -w /workspace \
           node:18 \
           sh -c "npm install && npm test"
         '''
     }
 }
+
 
 
         // stage('Install Dependencies & Run Tests (CI)') {
