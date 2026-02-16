@@ -16,18 +16,19 @@ pipeline {
         }
 
 
-        stage('Install Dependencies & Run Tests (CI)') {
+stage('Install Dependencies & Run Tests (CI)') {
     steps {
         sh '''
         echo "Running npm install & npm test inside Node container..."
         docker run --rm \
-          -v $PWD:/app \
-          -w /app \
+          -v $PWD:/workspace \
+          -w /workspace \
           node:18 \
           sh -c "npm install && npm test"
         '''
     }
 }
+
 
 
         // stage('Install Dependencies & Run Tests (CI)') {
