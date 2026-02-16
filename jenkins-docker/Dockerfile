@@ -10,3 +10,5 @@ RUN apt-get update && \
     node -v && npm -v
 
 USER jenkins
+
+
