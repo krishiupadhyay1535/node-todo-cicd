@@ -72,28 +72,28 @@ post {
     success {
         emailext(
             to: 'krishiupadhyay2@gmail.com',
-            subject: "✅ Jenkins SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-            body: '''
+            subject: "✅ Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
 Build Status: SUCCESS ✅
 
-Job Name   : ${JOB_NAME}
-Build No   : ${BUILD_NUMBER}
+Job Name   : ${env.JOB_NAME}
+Build No   : ${env.BUILD_NUMBER}
 
 Deployment completed successfully.
 New version is live in production.
 
 Docker Image:
-- ${IMAGE_NAME}:${BUILD_NUMBER}
+- ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
 
 Good job 🚀
-'''
+"""
         )
     }
 
     failure {
         emailext(
             to: 'krishiupadhyay2@gmail.com',
-            subject: "❌ Jenkins FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
+            subject: "❌ Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: '''
 Build Status: FAILED ❌
 
@@ -113,6 +113,7 @@ Please check Jenkins for full logs.
         )
     }
 }
+
 
 }
 
