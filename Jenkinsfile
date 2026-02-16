@@ -20,7 +20,6 @@ pipeline {
                 sh '''
                 npm install
                 npm test
-                exit 1
                 '''
             }
         }
@@ -60,6 +59,7 @@ pipeline {
                 else
                     docker stop todo-app-new || true
                     docker rm todo-app-new || true
+                    exit 1
                 fi
                 '''
             }
