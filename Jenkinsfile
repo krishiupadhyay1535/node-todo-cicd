@@ -35,16 +35,6 @@ pipeline {
 }
 
 
-        // stage('Install Dependencies & Run Tests (CI)') {
-        //     steps {
-        //         sh '''
-        //         echo "Running npm install & npm test..."
-        //         npm install
-        //         npm test
-        //         '''
-        //     }
-        // }
-
         stage('Build Docker Image') {
             steps {
                 sh '''
@@ -75,20 +65,69 @@ pipeline {
             }
         }
 
-        stage('Deploy Container (CD)') {
-            steps {
-                sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
+    //     stage('Deploy Container (CD)') {
+    //         steps {
+    //             sh '''
+    //             docker stop $CONTAINER_NAME || true
+    //             docker rm $CONTAINER_NAME || true
 
-                docker run -d \
-                  -p 8000:8000 \
-                  --name $CONTAINER_NAME \
-                  $IMAGE_NAME:latest
-                '''
-            }
-        }
+    //             docker run -d \
+    //               -p 8000:8000 \
+    //               --name $CONTAINER_NAME \
+    //               $IMAGE_NAME:latest
+    //             '''
+    //         }
+    //     }
+    // }
+
+
+    stage('Deploy with Rollout & Rollback') {
+    steps {
+        sh '''
+        echo "Starting rollout deployment..."
+
+        # Run new container on SAME PORT but different name
+        docker run -d \
+          --name todo-app-new \
+          -p 8001:8000 \
+          $IMAGE_NAME:latest
+
+        echo "Waiting for app to start..."
+        sleep 10
+
+        echo "Health check..."
+        if curl -f http://localhost:8001 > /dev/null; then
+            echo "New version is healthy ✅"
+
+            echo "Stopping old container..."
+            docker stop todo-app || true
+            docker rm todo-app || true
+
+            echo "Switching traffic to new container..."
+            docker stop todo-app-new
+            docker rm todo-app-new
+
+            docker run -d \
+              --name todo-app \
+              -p 8000:8000 \
+              $IMAGE_NAME:latest
+
+            echo "Deployment successful 🚀"
+
+        else
+            echo "Health check failed ❌"
+            echo "Rollback initiated..."
+
+            docker stop todo-app-new || true
+            docker rm todo-app-new || true
+
+            echo "Old container kept running ✅"
+            exit 1
+        fi
+        '''
     }
+}
+
 
     post {
         failure {
