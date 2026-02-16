@@ -66,13 +66,13 @@ pipeline {
         }
     }
 
-    post {
+post {
 
     success {
         emailext(
             to: 'krishiupadhyay2@gmail.com',
             subject: "✅ Jenkins SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
-            body: """
+            body: '''
 Build Status: SUCCESS ✅
 
 Job Name   : ${JOB_NAME}
@@ -82,10 +82,10 @@ Deployment completed successfully.
 New version is live in production.
 
 Docker Image:
-- ${IMAGE_NAME}:${IMAGE_TAG}
+- ${IMAGE_NAME}:${BUILD_NUMBER}
 
 Good job 🚀
-"""
+'''
         )
     }
 
@@ -93,7 +93,7 @@ Good job 🚀
         emailext(
             to: 'krishiupadhyay2@gmail.com',
             subject: "❌ Jenkins FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
-            body: """
+            body: '''
 Build Status: FAILED ❌
 
 Job Name   : ${JOB_NAME}
@@ -108,10 +108,11 @@ ${BUILD_LOG, maxLines=50}
 --------------------------------
 
 Please check Jenkins for full logs.
-"""
+'''
         )
     }
 }
+
 }
 
 //     post {
