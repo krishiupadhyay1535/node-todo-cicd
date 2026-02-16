@@ -101,7 +101,7 @@ pipeline {
     post {
         failure {
             emailext(
-                to: 'krishiupadhyay2@gmail.com',
+                to: 'ishumakhiyaviya306@gmail.com',
                 subject: "❌ Jenkins FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
 Hello Sir,
@@ -124,7 +124,7 @@ Jenkins
 
         success {
             emailext(
-                to: 'krishiupadhyay2@gmail.com',
+                to: 'ishumakhiyaviya306@gmail.com',
                 subject: "✅ Jenkins SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
 Hello Sir,
