@@ -67,10 +67,58 @@ pipeline {
     }
 
     post {
-        failure {
-            mail to: 'krishiupadhyay2@gmail.com',
-                 subject: "❌ Jenkins Pipeline FAILED",
-                 body: "Rollback triggered. Old version kept running."
-        }
+
+    success {
+        emailext(
+            to: 'krishiupadhyay2@gmail.com',
+            subject: "✅ Jenkins SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
+            body: """
+Build Status: SUCCESS ✅
+
+Job Name   : ${JOB_NAME}
+Build No   : ${BUILD_NUMBER}
+
+Deployment completed successfully.
+New version is live in production.
+
+Docker Image:
+- ${IMAGE_NAME}:${IMAGE_TAG}
+
+Good job 🚀
+"""
+        )
+    }
+
+    failure {
+        emailext(
+            to: 'krishiupadhyay2@gmail.com',
+            subject: "❌ Jenkins FAILED: ${JOB_NAME} #${BUILD_NUMBER}",
+            body: """
+Build Status: FAILED ❌
+
+Job Name   : ${JOB_NAME}
+Build No   : ${BUILD_NUMBER}
+
+Failure occurred during pipeline execution.
+If deployment started, rollback was triggered automatically.
+
+Last 50 lines of console output:
+--------------------------------
+${BUILD_LOG, maxLines=50}
+--------------------------------
+
+Please check Jenkins for full logs.
+"""
+        )
     }
 }
+
+
+//     post {
+//         failure {
+//             mail to: 'krishiupadhyay2@gmail.com',
+//                  subject: "❌ Jenkins Pipeline FAILED",
+//                  body: "Rollback triggered. Old version kept running."
+//         }
+//     }
+// }
