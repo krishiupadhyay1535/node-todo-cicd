@@ -84,7 +84,7 @@ New version is live in production.
 Docker Image:
 - ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
 
-Good job 🚀
+Thank You 
 """
         )
     }
