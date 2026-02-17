@@ -65,10 +65,14 @@ pipeline {
                         passwordVariable: 'SMTP_PASS'
                     )
                 ]) {
-                    sh '''
+sh '''
   set -e
 
   APP_IMAGE="krishi2210/todo-app:latest"
+
+  echo "Cleaning old rollout container if exists..."
+  docker stop todo-app-new || true
+  docker rm todo-app-new || true
 
   echo "Starting rollout deployment using $APP_IMAGE"
 
@@ -107,6 +111,7 @@ pipeline {
       exit 1
   fi
 '''
+
 
                 }
             }
