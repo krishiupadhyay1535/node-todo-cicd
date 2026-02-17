@@ -16,11 +16,73 @@ const MAGIC_SECRET = process.env.MAGIC_LINK_SECRET || 'dev-secret';
 /* ================= EMAIL PAGE ================= */
 exports.emailPage = (req, res) => {
   res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      width: 320px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #007bff;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .note {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
     <h2>Admin Login</h2>
     <form method="POST" action="/auth/email">
-      <input name="email" placeholder="Enter admin email" required />
+      <input type="email" name="email" placeholder="Enter admin email" required />
       <button type="submit">Send Magic Link</button>
     </form>
+    <div class="note">
+      Only approved admin emails are allowed
+    </div>
+  </div>
+
+</body>
+</html>
   `);
 };
 
