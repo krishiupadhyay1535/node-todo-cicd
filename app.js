@@ -41,7 +41,7 @@ app.get('/admin', auth.requireAuth, (req, res) => {
 // ---------------- TODO ROUTES ----------------
 
 /* The to do list and the form are displayed */
-app.get('/todo', function (req, res) {
+app.get('/todo', auth.requireAuth, function (req, res) {
     res.render('todo.ejs', {
         todolist,
         clickHandler: "func1();"
@@ -49,7 +49,7 @@ app.get('/todo', function (req, res) {
 })
 
 /* Adding an item to the to do list */
-.post('/todo/add/', function (req, res) {
+.post('/todo/add/', auth.requireAuth, function (req, res) {
     let newTodo = sanitizer.escape(req.body.newtodo);
     if (req.body.newtodo != '') {
         todolist.push(newTodo);
@@ -58,7 +58,7 @@ app.get('/todo', function (req, res) {
 })
 
 /* Deletes an item from the to do list */
-.get('/todo/delete/:id', function (req, res) {
+.get('/todo/delete/:id', auth.requireAuth, function (req, res) {
     if (req.params.id != '') {
         todolist.splice(req.params.id, 1);
     }
@@ -66,7 +66,7 @@ app.get('/todo', function (req, res) {
 })
 
 /* Get a single todo item and render edit page */
-.get('/todo/:id', function (req, res) {
+.get('/todo/:id', auth.requireAuth, function (req, res) {
     let todoIdx = req.params.id;
     let todo = todolist[todoIdx];
 
@@ -82,7 +82,7 @@ app.get('/todo', function (req, res) {
 })
 
 /* Edit item in the todo list */
-.put('/todo/edit/:id', function (req, res) {
+.put('/todo/edit/:id', auth.requireAuth, function (req, res) {
     let todoIdx = req.params.id;
     let editTodo = sanitizer.escape(req.body.editTodo);
     if (todoIdx != '' && editTodo != '') {
