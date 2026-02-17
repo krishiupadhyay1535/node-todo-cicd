@@ -11,7 +11,7 @@ const allowedEmails = JSON.parse(
 const MAGIC_SECRET = process.env.MAGIC_LINK_SECRET || 'dev-secret';
 
 // Simple in-memory session store (OK for demo)
-const sessions = new Set();
+//const sessions = new Set();
 
 /* ================= EMAIL PAGE ================= */
 exports.emailPage = (req, res) => {
@@ -78,19 +78,25 @@ exports.verifyLink = (req, res) => {
     return res.status(400).send('Invalid link');
   }
 
-  sessions.add(token);
-  res.cookie('session', token, { httpOnly: true });
+  // Trust token for demo (no in-memory store)
+  res.cookie('session', token, {
+    httpOnly: true,
+    sameSite: 'lax'
+  });
+
   res.redirect('/admin');
 };
+
 
 /* ================= AUTH MIDDLEWARE ================= */
 exports.requireAuth = (req, res, next) => {
   const token = req.cookies?.session;
 
-  if (!token || !sessions.has(token)) {
+  if (!token) {
     return res.redirect('/auth/email');
   }
   next();
 };
+
 
 
