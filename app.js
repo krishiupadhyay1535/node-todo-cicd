@@ -33,8 +33,9 @@ app.get('/auth/verify', auth.verifyLink);
 
 // Protected admin route
 app.get('/admin', auth.requireAuth, (req, res) => {
-    res.send('Welcome Admin 👑');
+    res.redirect('/todo');
 });
+
 // ==============================================
 
 
