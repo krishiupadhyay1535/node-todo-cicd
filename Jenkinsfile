@@ -2,15 +2,12 @@ pipeline {
     agent any
 
     environment {
-    IMAGE_NAME = "krishi2210/todo-app"
-    IMAGE_TAG  = "${BUILD_NUMBER}"
-    CONTAINER_NAME = "todo-app"
+        IMAGE_NAME = "krishi2210/todo-app"
+        IMAGE_TAG  = "${BUILD_NUMBER}"
+        CONTAINER_NAME = "todo-app"
 
-    SMTP_EMAIL    = credentials('gmail-smtp').username
-    SMTP_PASSWORD = credentials('gmail-smtp').password
-
-    MAGIC_LINK_SECRET = credentials('magic-secret')
-}
+        MAGIC_LINK_SECRET = credentials('magic-secret')
+    }
 
 
     stages {
@@ -63,6 +60,8 @@ pipeline {
         krishi2210/todo-app:latest
 
         sleep 10
+
+        sh 'printenv | grep SMTP'
 
         echo "Health check..."
         if curl -f http://108.131.0.221:8001 > /dev/null; then
