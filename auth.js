@@ -125,7 +125,66 @@ exports.sendMagicLink = async (req, res) => {
       `
     });
 
-    res.send('Magic link sent to your email');
+    res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check Your Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .message-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      width: 360px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .icon {
+      font-size: 40px;
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      font-size: 14px;
+    }
+    .hint {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="message-box">
+    <div class="icon">📧</div>
+    <h2>Check your email</h2>
+    <p>
+      A magic login link has been sent to <br>
+      <strong>${email}</strong>
+    </p>
+    <div class="hint">
+      The link will expire soon. Please check your inbox or spam folder.
+    </div>
+  </div>
+
+</body>
+</html>
+`);
+
   } catch (err) {
     console.error('Email send error:', err);
     res.status(500).send('Failed to send email');
