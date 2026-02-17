@@ -1,18 +1,22 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
+// Load allowed emails
 const allowedEmails = JSON.parse(
   fs.readFileSync('./allowed-emails.json', 'utf8')
 ).admins;
 
+// Secret for signing magic links
 const MAGIC_SECRET = process.env.MAGIC_LINK_SECRET || 'dev-secret';
 
-// simple in-memory session (OK for demo)
+// Simple in-memory session store (OK for demo)
 const sessions = new Set();
 
-/* Step A: ask for email */
+/* ================= EMAIL PAGE ================= */
 exports.emailPage = (req, res) => {
   res.send(`
+    <h2>Admin Login</h2>
     <form method="POST" action="/auth/email">
       <input name="email" placeholder="Enter admin email" required />
       <button type="submit">Send Magic Link</button>
@@ -20,14 +24,16 @@ exports.emailPage = (req, res) => {
   `);
 };
 
-/* Step B: send magic link */
-exports.sendMagicLink = (req, res) => {
+/* ================= SEND MAGIC LINK ================= */
+exports.sendMagicLink = async (req, res) => {
   const email = req.body.email;
 
+  // Check allowlist
   if (!allowedEmails.includes(email)) {
     return res.status(403).send('Email not allowed');
   }
 
+  // Create token
   const token = crypto
     .createHmac('sha256', MAGIC_SECRET)
     .update(email + Date.now())
@@ -35,13 +41,36 @@ exports.sendMagicLink = (req, res) => {
 
   const link = `http://${req.headers.host}/auth/verify?token=${token}`;
 
-  // DEMO: log link instead of real email
-  console.log(`Magic link for ${email}: ${link}`);
+  // Create SMTP transporter
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
 
-  res.send('Magic link sent to email (check logs)');
+  try {
+    await transporter.sendMail({
+      from: `"Admin Access" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Your Magic Login Link',
+      html: `
+        <p>Hello,</p>
+        <p>Click the link below to login as admin:</p>
+        <p><a href="${link}">${link}</a></p>
+        <p>This link is valid for a short time.</p>
+      `
+    });
+
+    res.send('Magic link sent to your email');
+  } catch (err) {
+    console.error('Email send error:', err);
+    res.status(500).send('Failed to send email');
+  }
 };
 
-/* Step C: verify magic link */
+/* ================= VERIFY MAGIC LINK ================= */
 exports.verifyLink = (req, res) => {
   const token = req.query.token;
 
@@ -50,11 +79,11 @@ exports.verifyLink = (req, res) => {
   }
 
   sessions.add(token);
-  res.cookie('session', token);
+  res.cookie('session', token, { httpOnly: true });
   res.redirect('/admin');
 };
 
-/* Middleware to protect admin */
+/* ================= AUTH MIDDLEWARE ================= */
 exports.requireAuth = (req, res, next) => {
   const token = req.cookies?.session;
 
@@ -63,3 +92,5 @@ exports.requireAuth = (req, res, next) => {
   }
   next();
 };
+
+
