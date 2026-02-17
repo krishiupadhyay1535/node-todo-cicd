@@ -48,7 +48,7 @@ pipeline {
                 docker run -d --name todo-app-new -p 8001:8000 $IMAGE_NAME:latest
                 sleep 10
 
-                if curl -f http://108.129.208.156:8001 > /dev/null; then
+                if curl -f http://108.131.0.221:8001 > /dev/null; then
                     docker stop todo-app || true
                     docker rm todo-app || true
 
