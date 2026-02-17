@@ -2,13 +2,16 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "krishi2210/todo-app"
-        IMAGE_TAG  = "${BUILD_NUMBER}"
-        CONTAINER_NAME = "todo-app"
+    IMAGE_NAME = "krishi2210/todo-app"
+    IMAGE_TAG  = "${BUILD_NUMBER}"
+    CONTAINER_NAME = "todo-app"
 
-        SMTP_CREDS = credentials('gmail-smtp')
-        MAGIC_LINK_SECRET = credentials('magic-secret')
-    }
+    SMTP_EMAIL    = credentials('gmail-smtp').username
+    SMTP_PASSWORD = credentials('gmail-smtp').password
+
+    MAGIC_LINK_SECRET = credentials('magic-secret')
+}
+
 
     stages {
 
