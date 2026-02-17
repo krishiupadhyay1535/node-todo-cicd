@@ -5,7 +5,8 @@
     "body-parser": "^1.16.0",
     "cookie-parser": "^1.4.7",
     "ejs": "^2.5.5",
-    "express": "^4.14.0",
+    "express": "^4.22.1",
+    "express-session": "^1.19.0",
     "method-override": "^3.0.0",
     "nodemailer": "^8.0.1",
     "sanitizer": "^0.1.3"
