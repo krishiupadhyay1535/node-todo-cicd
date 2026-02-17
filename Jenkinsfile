@@ -46,43 +46,47 @@ pipeline {
         }
 
         stage('Deploy with Rollout & Rollback') {
-            when {
-                branch 'test'
-            }
-            steps {
-                sh '''
-                    docker run -d --name todo-app-new \
-                    -e SMTP_USER=$SMTP_CREDS_USR \
-                    -e SMTP_PASS=$SMTP_CREDS_PSW \
-                    -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                    -p 8001:8000 \
-                    $IMAGE_NAME:latest
+    when {
+        branch 'test'
+    }
+    steps {
+        sh '''
+        echo "Running rollout container..."
+        docker run -d --name todo-app-new \
+        -e SMTP_USER="$SMTP_CREDS_USR" \
+        -e SMTP_PASS="$SMTP_CREDS_PSW" \
+        -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
+        -p 8001:8000 \
+        krishi2210/todo-app:latest
 
+        sleep 10
 
-                sleep 10
+        echo "Health check..."
+        if curl -f http://108.131.0.221:8001 > /dev/null; then
+            echo "Health check passed, switching containers"
 
-                if curl -f http://108.131.0.221:8001 > /dev/null; then
-                    docker stop todo-app || true
-                    docker rm todo-app || true
+            docker stop todo-app || true
+            docker rm todo-app || true
 
-                    docker stop todo-app-new
-                    docker rm todo-app-new
+            docker stop todo-app-new
+            docker rm todo-app-new
 
-                    docker run -d --name todo-app \
-                    docker run -d --name todo-app-new \
-                    -e SMTP_USER=$SMTP_CREDS_USR \
-                    -e SMTP_PASS=$SMTP_CREDS_PSW \
-                    -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                    -p 8001:8000 \
-                    $IMAGE_NAME:latest
-                else
-                    docker stop todo-app-new || true
-                    docker rm todo-app-new || true
-                    exit 1
-                fi
-                '''
-            }
-        }
+            docker run -d --name todo-app \
+            -e SMTP_USER="$SMTP_CREDS_USR" \
+            -e SMTP_PASS="$SMTP_CREDS_PSW" \
+            -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
+            -p 8000:8000 \
+            krishi2210/todo-app:latest
+        else
+            echo "Health check failed, rollback"
+            docker stop todo-app-new || true
+            docker rm todo-app-new || true
+            exit 1
+        fi
+        '''
+    }
+}
+
     }
 
     post {
