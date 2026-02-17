@@ -91,9 +91,67 @@ exports.sendMagicLink = async (req, res) => {
   const email = req.body.email;
 
   // Check allowlist
-  if (!allowedEmails.includes(email)) {
-    return res.status(403).send('Email not allowed');
-  }
+if (!allowedEmails.includes(email)) {
+  return res.status(403).send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Access Denied</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .error-box {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      width: 360px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .icon {
+      font-size: 40px;
+      color: #dc3545;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      font-size: 14px;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="error-box">
+    <div class="icon">⛔</div>
+    <h2>Access Denied</h2>
+    <p>
+      This email is not authorized to access the application.
+    </p>
+    <a href="/auth/email">Go back to login</a>
+  </div>
+
+</body>
+</html>
+`);
+}
+
 
   // Create token
   const token = crypto
