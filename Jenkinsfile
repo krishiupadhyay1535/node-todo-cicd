@@ -47,7 +47,7 @@ pipeline {
 
         stage('Deploy with Rollout & Rollback') {
     when {
-        branch 'test'
+        branch 'v1.1'
     }
     steps {
         sh '''
