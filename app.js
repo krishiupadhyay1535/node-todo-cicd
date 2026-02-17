@@ -26,6 +26,13 @@ app.use(methodOverride(function (req, res) {
 // ---------------- DATA ----------------
 let todolist = [];
 
+// ===== Root redirect (auth entry point) =====
+app.get('/', (req, res) => {
+    res.redirect('/admin');
+});
+// ==========================================
+
+
 // ================= AUTH ROUTES =================
 app.get('/auth/email', auth.emailPage);
 app.post('/auth/email', auth.sendMagicLink);
@@ -42,7 +49,7 @@ app.get('/admin', auth.requireAuth, (req, res) => {
 // ---------------- TODO ROUTES ----------------
 
 /* The to do list and the form are displayed */
-app.get('/todo', auth.requireAuth, function (req, res) {
+app.get('/todo', function (req, res) {
     res.render('todo.ejs', {
         todolist,
         clickHandler: "func1();"
