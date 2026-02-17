@@ -6,8 +6,7 @@ pipeline {
         IMAGE_TAG  = "${BUILD_NUMBER}"
         CONTAINER_NAME = "todo-app"
 
-        SMTP_USER = credentials('smtp-user')
-        SMTP_PASS = credentials('smtp-pass')
+        SMTP_CREDS = credentials('gmail-smtp')
         MAGIC_LINK_SECRET = credentials('magic-secret')
     }
 
@@ -52,12 +51,13 @@ pipeline {
             }
             steps {
                 sh '''
-                docker run -d --name todo-app-new \
-                  -e SMTP_USER=$SMTP_USER \
-                  -e SMTP_PASS=$SMTP_PASS \
-                  -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                  -p 8001:8000 \
-                  $IMAGE_NAME:latest
+                    docker run -d --name todo-app-new \
+                    -e SMTP_USER=$SMTP_CREDS_USR \
+                    -e SMTP_PASS=$SMTP_CREDS_PSW \
+                    -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                    -p 8001:8000 \
+                    $IMAGE_NAME:latest
+
 
                 sleep 10
 
@@ -69,11 +69,12 @@ pipeline {
                     docker rm todo-app-new
 
                     docker run -d --name todo-app \
-                      -e SMTP_USER=$SMTP_USER \
-                      -e SMTP_PASS=$SMTP_PASS \
-                      -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                      -p 8000:8000 \
-                      $IMAGE_NAME:latest
+                    docker run -d --name todo-app-new \
+                    -e SMTP_USER=$SMTP_CREDS_USR \
+                    -e SMTP_PASS=$SMTP_CREDS_PSW \
+                    -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                    -p 8001:8000 \
+                    $IMAGE_NAME:latest
                 else
                     docker stop todo-app-new || true
                     docker rm todo-app-new || true
