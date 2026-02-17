@@ -43,6 +43,9 @@ pipeline {
         }
 
         stage('Deploy with Rollout & Rollback') {
+            when {
+        branch 'test'
+    }
             steps {
                 sh '''
                 docker run -d --name todo-app-new -p 8001:8000 $IMAGE_NAME:latest
