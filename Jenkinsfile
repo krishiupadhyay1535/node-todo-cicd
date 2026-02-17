@@ -66,43 +66,48 @@ pipeline {
                     )
                 ]) {
                     sh '''
-                      echo "Starting rollout deployment..."
+  set -e
 
-                      docker run -d --name todo-app-new \
-                        -e SMTP_USER=$SMTP_USER \
-                        -e SMTP_PASS=$SMTP_PASS \
-                        -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                        -p 8001:8000 \
-                        $IMAGE_NAME:latest
+  APP_IMAGE="krishi2210/todo-app:latest"
 
-                      sleep 10
+  echo "Starting rollout deployment using $APP_IMAGE"
 
-                      echo "Verifying SMTP env inside container"
-                      docker exec todo-app-new env | grep SMTP || true
+  docker run -d --name todo-app-new \
+    -e SMTP_USER="$SMTP_USER" \
+    -e SMTP_PASS="$SMTP_PASS" \
+    -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
+    -p 8001:8000 \
+    "$APP_IMAGE"
 
-                      echo "Running health check..."
-                      if curl -f http://108.131.0.221:8001 > /dev/null; then
-                          echo "Health check passed. Promoting container."
+  sleep 10
 
-                          docker stop todo-app || true
-                          docker rm todo-app || true
+  echo "Verifying SMTP env inside container"
+  docker exec todo-app-new env | grep SMTP || true
 
-                          docker stop todo-app-new
-                          docker rm todo-app-new
+  echo "Running health check..."
+  if curl -f http://108.131.0.221:8001 > /dev/null; then
+      echo "Health check passed. Promoting container."
 
-                          docker run -d --name todo-app \
-                            -e SMTP_USER=$SMTP_USER \
-                            -e SMTP_PASS=$SMTP_PASS \
-                            -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
-                            -p 8000:8000 \
-                            $IMAGE_NAME:latest
-                      else
-                          echo "Health check failed. Rolling back."
-                          docker stop todo-app-new || true
-                          docker rm todo-app-new || true
-                          exit 1
-                      fi
-                    '''
+      docker stop todo-app || true
+      docker rm todo-app || true
+
+      docker stop todo-app-new
+      docker rm todo-app-new
+
+      docker run -d --name todo-app \
+        -e SMTP_USER="$SMTP_USER" \
+        -e SMTP_PASS="$SMTP_PASS" \
+        -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
+        -p 8000:8000 \
+        "$APP_IMAGE"
+  else
+      echo "Health check failed. Rolling back."
+      docker stop todo-app-new || true
+      docker rm todo-app-new || true
+      exit 1
+  fi
+'''
+
                 }
             }
         }
