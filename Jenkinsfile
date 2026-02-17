@@ -5,6 +5,10 @@ pipeline {
         IMAGE_NAME = "krishi2210/todo-app"
         IMAGE_TAG  = "${BUILD_NUMBER}"
         CONTAINER_NAME = "todo-app"
+
+        SMTP_USER = credentials('smtp-user')
+        SMTP_PASS = credentials('smtp-pass')
+        MAGIC_LINK_SECRET = credentials('magic-secret')
     }
 
     stages {
@@ -44,11 +48,17 @@ pipeline {
 
         stage('Deploy with Rollout & Rollback') {
             when {
-        branch 'test'
-    }
+                branch 'test'
+            }
             steps {
                 sh '''
-                docker run -d --name todo-app-new -p 8001:8000 $IMAGE_NAME:latest
+                docker run -d --name todo-app-new \
+                  -e SMTP_USER=$SMTP_USER \
+                  -e SMTP_PASS=$SMTP_PASS \
+                  -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                  -p 8001:8000 \
+                  $IMAGE_NAME:latest
+
                 sleep 10
 
                 if curl -f http://108.131.0.221:8001 > /dev/null; then
@@ -58,7 +68,12 @@ pipeline {
                     docker stop todo-app-new
                     docker rm todo-app-new
 
-                    docker run -d --name todo-app -p 8000:8000 $IMAGE_NAME:latest
+                    docker run -d --name todo-app \
+                      -e SMTP_USER=$SMTP_USER \
+                      -e SMTP_PASS=$SMTP_PASS \
+                      -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                      -p 8000:8000 \
+                      $IMAGE_NAME:latest
                 else
                     docker stop todo-app-new || true
                     docker rm todo-app-new || true
@@ -69,13 +84,12 @@ pipeline {
         }
     }
 
-post {
-
-    success {
-        emailext(
-            to: 'krishiupadhyay2@gmail.com',
-            subject: "✅ Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: """
+    post {
+        success {
+            emailext(
+                to: 'krishiupadhyay2@gmail.com',
+                subject: "✅ Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
 Build Status: SUCCESS ✅
 
 Job Name   : ${env.JOB_NAME}
@@ -87,16 +101,16 @@ New version is live in production.
 Docker Image:
 - ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
 
-Thank You 
+Thank You
 """
-        )
-    }
+            )
+        }
 
-    failure {
-        emailext(
-            to: 'krishiupadhyay2@gmail.com',
-            subject: "❌ Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: '''
+        failure {
+            emailext(
+                to: 'krishiupadhyay2@gmail.com',
+                subject: "❌ Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: '''
 Build Status: FAILED ❌
 
 Job Name   : ${JOB_NAME}
@@ -112,11 +126,11 @@ ${BUILD_LOG, maxLines=50}
 
 Please check Jenkins for full logs.
 '''
-        )
+            )
+        }
     }
 }
 
-}
 
 
 //     post {
