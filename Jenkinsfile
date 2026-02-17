@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "krishi2210/todo-app"
-        IMAGE_TAG  = "${BUILD_NUMBER}"
+        IMAGE_NAME     = "krishi2210/todo-app"
+        IMAGE_TAG      = "${BUILD_NUMBER}"
         CONTAINER_NAME = "todo-app"
 
         MAGIC_LINK_SECRET = credentials('magic-secret')
     }
-
 
     stages {
 
@@ -21,122 +20,138 @@ pipeline {
         stage('Install & Test') {
             steps {
                 sh '''
-                npm install
-                npm test
+                  npm install
+                  npm test
                 '''
             }
         }
 
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t $IMAGE_NAME:$IMAGE_TAG .
-                docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
+                  docker build -t $IMAGE_NAME:$IMAGE_TAG .
+                  docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
                 '''
             }
         }
 
-        stage('Push Image') {
+        stage('Push Docker Image') {
             steps {
-                sh '''
-                docker push $IMAGE_NAME:$IMAGE_TAG
-                docker push $IMAGE_NAME:latest
-                '''
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                      echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                      docker push $IMAGE_NAME:$IMAGE_TAG
+                      docker push $IMAGE_NAME:latest
+                    '''
+                }
             }
         }
 
         stage('Deploy with Rollout & Rollback') {
-    when {
-        branch 'v1.1'
-    }
-    steps {
-        sh '''
-        echo "Running rollout container..."
-        docker run -d --name todo-app-new \
-        -e SMTP_USER="$SMTP_CREDS_USR" \
-        -e SMTP_PASS="$SMTP_CREDS_PSW" \
-        -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
-        -p 8001:8000 \
-        krishi2210/todo-app:latest
+            when {
+                branch 'v1.1'
+            }
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'gmail-smtp',
+                        usernameVariable: 'SMTP_USER',
+                        passwordVariable: 'SMTP_PASS'
+                    )
+                ]) {
+                    sh '''
+                      echo "Starting rollout deployment..."
 
-        sleep 10
+                      docker run -d --name todo-app-new \
+                        -e SMTP_USER=$SMTP_USER \
+                        -e SMTP_PASS=$SMTP_PASS \
+                        -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                        -p 8001:8000 \
+                        $IMAGE_NAME:latest
 
-        sh 'printenv | grep SMTP'
+                      sleep 10
 
-        echo "Health check..."
-        if curl -f http://108.131.0.221:8001 > /dev/null; then
-            echo "Health check passed, switching containers"
+                      echo "Verifying SMTP env inside container"
+                      docker exec todo-app-new env | grep SMTP || true
 
-            docker stop todo-app || true
-            docker rm todo-app || true
+                      echo "Running health check..."
+                      if curl -f http://108.131.0.221:8001 > /dev/null; then
+                          echo "Health check passed. Promoting container."
 
-            docker stop todo-app-new
-            docker rm todo-app-new
+                          docker stop todo-app || true
+                          docker rm todo-app || true
 
-            docker run -d --name todo-app \
-            -e SMTP_USER="$SMTP_CREDS_USR" \
-            -e SMTP_PASS="$SMTP_CREDS_PSW" \
-            -e MAGIC_LINK_SECRET="$MAGIC_LINK_SECRET" \
-            -p 8000:8000 \
-            krishi2210/todo-app:latest
-        else
-            echo "Health check failed, rollback"
-            docker stop todo-app-new || true
-            docker rm todo-app-new || true
-            exit 1
-        fi
-        '''
-    }
-}
+                          docker stop todo-app-new
+                          docker rm todo-app-new
 
+                          docker run -d --name todo-app \
+                            -e SMTP_USER=$SMTP_USER \
+                            -e SMTP_PASS=$SMTP_PASS \
+                            -e MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET \
+                            -p 8000:8000 \
+                            $IMAGE_NAME:latest
+                      else
+                          echo "Health check failed. Rolling back."
+                          docker stop todo-app-new || true
+                          docker rm todo-app-new || true
+                          exit 1
+                      fi
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
             emailext(
-                to: 'krishiupadhyay2@gmail.com',
+                to: 'krishiupadhyay1535@gmail.com',
                 subject: "✅ Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
 Build Status: SUCCESS ✅
 
-Job Name   : ${env.JOB_NAME}
-Build No   : ${env.BUILD_NUMBER}
+Job Name : ${env.JOB_NAME}
+Build No : ${env.BUILD_NUMBER}
 
 Deployment completed successfully.
-New version is live in production.
+New version is live.
 
 Docker Image:
 - ${env.IMAGE_NAME}:${env.BUILD_NUMBER}
 
-Thank You
+Good job 🚀
 """
             )
         }
 
         failure {
             emailext(
-                to: 'krishiupadhyay2@gmail.com',
+                to: 'krishiupadhyay1535@gmail.com',
                 subject: "❌ Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: '''
+                body: """
 Build Status: FAILED ❌
 
-Job Name   : ${JOB_NAME}
-Build No   : ${BUILD_NUMBER}
+Job Name : ${env.JOB_NAME}
+Build No : ${env.BUILD_NUMBER}
 
-Failure occurred during pipeline execution.
-If deployment started, rollback was triggered automatically.
+Pipeline failed.
+Rollback executed if deployment started.
 
-Last 50 lines of console output:
---------------------------------
-${BUILD_LOG, maxLines=50}
---------------------------------
+Please check Jenkins console logs.
 
-Please check Jenkins for full logs.
-'''
+– Jenkins
+"""
             )
         }
     }
 }
+
 
 
 
