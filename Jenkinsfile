@@ -43,6 +43,9 @@ pipeline {
         }
 
         stage('Deploy with Rollout & Rollback') {
+            when {
+                branch 'v1.j'
+            }
             steps {
                 sh '''
                 docker run -d --name todo-app-new -p 8001:8000 $IMAGE_NAME:latest
@@ -123,3 +126,4 @@ Please check Jenkins for full logs.
 //         }
 //     }
 // }
+
