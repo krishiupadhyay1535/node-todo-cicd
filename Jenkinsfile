@@ -118,11 +118,3 @@ Please check Jenkins for full logs.
 
 }
 
-//     post {
-//         failure {
-//             mail to: 'krishiupadhyay2@gmail.com',
-//                  subject: "❌ Jenkins Pipeline FAILED",
-//                  body: "Rollback triggered. Old version kept running."
-//         }
-//     }
-// }
