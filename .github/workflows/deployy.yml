@@ -1,0 +1,27 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ EC2_HOST }}
+        username: ${{ EC2_USER }}
+        key: ${{ EC2_KEY }}
+        port: ${{ EC2_PORT }}
+        script: |
+          cd /var/www/myapp
+          git pull origin main
+          npm install
+          pm2 restart myapp || pm2 start app.js --name myapp
