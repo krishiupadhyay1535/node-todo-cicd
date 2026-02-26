@@ -21,7 +21,7 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         port: ${{ secrets.EC2_PORT }}
         script: |
-          cd /var/www/myapp
-          git pull origin main
+          cd ~/node-todo-cicd
+          git pull origin master
           npm install
           pm2 restart myapp || pm2 start app.js --name myapp
