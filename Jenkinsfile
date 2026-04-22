@@ -6,8 +6,18 @@ pipeline {
         IMAGE_TAG  = "${BUILD_NUMBER}"
         CONTAINER_NAME = "todo-app"
     }
-
+    
     stages {
+
+        stage('test'){
+            stapes{
+                ssh'''
+                docker exec -it jenkins bash
+                whoami
+                ls -ld /var/jenkins_home
+                ls -ld /var/jenkins_home/caches'''
+            }
+        }
 
         stage('Checkout') {
             steps {
