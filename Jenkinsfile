@@ -9,16 +9,6 @@ pipeline {
     
     stages {
 
-        stage('test'){
-            steps {
-                ssh'''
-                docker exec -it jenkins bash
-                whoami
-                ls -ld /var/jenkins_home
-                ls -ld /var/jenkins_home/caches'''
-            }
-        }
-
         stage('Checkout') {
             steps {
                 checkout scm
