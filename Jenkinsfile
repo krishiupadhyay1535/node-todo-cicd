@@ -10,7 +10,7 @@ pipeline {
     stages {
 
         stage('test'){
-            stapes{
+            steps {
                 ssh'''
                 docker exec -it jenkins bash
                 whoami
