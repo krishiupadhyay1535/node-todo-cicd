@@ -70,7 +70,7 @@ post {
 
     success {
         emailext(
-            to: 'mygmail@gmail.com',
+            to: 'krishiupadhyay1535@gmail.com',
             subject: "✅ Jenkins SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
 Build Status: SUCCESS ✅
@@ -91,7 +91,7 @@ Thank You
 
     failure {
         emailext(
-            to: 'mygmail@gmail.com',
+            to: 'krishiupadhyay1535@gmail.com',
             subject: "❌ Jenkins FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: '''
 Build Status: FAILED ❌
