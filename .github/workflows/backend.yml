@@ -52,30 +52,34 @@ jobs:
       # 8. Deploy
       - name: Deploy with Rollback
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << EOF
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
 
           IMAGE_NAME=krishi2210/todo-app
           IMAGE_TAG=${{ github.run_number }}
 
+          echo "Cleanup old temp container..."
+          docker rm -f todo-app-new || true
+
           echo "Pull latest image..."
           docker pull $IMAGE_NAME:$IMAGE_TAG
 
-          PREVIOUS=$(docker ps --filter "name=todo-app" --format "{{.Image}}")
+          echo "Saving previous image..."
+          PREVIOUS=$(docker inspect todo-app --format='{{.Config.Image}}' 2>/dev/null)
 
-          echo "Starting new container..."
-          docker run -d --name todo-app-new -p 8001:8000 $IMAGE_NAME:$IMAGE_TAG
+          echo "Starting new container (canary)..."
+          docker run -d --name todo-app-new -p 8001:3001 --restart always $IMAGE_NAME:$IMAGE_TAG
 
           echo "Waiting for health check..."
-          for i in {1..10}; do
-            if curl -f http://localhost:8001 > /dev/null; then
+          for i in {1..20}; do
+            if curl -f http://localhost:8001/health > /dev/null; then
               echo "Health check passed"
               break
             fi
             sleep 3
           done
 
-          if curl -f http://localhost:8001 > /dev/null; then
-              echo "Switching containers..."
+          if curl -f http://localhost:8001/health > /dev/null; then
+              echo "Deploy success → switching containers"
 
               docker stop todo-app || true
               docker rm todo-app || true
@@ -83,16 +87,20 @@ jobs:
               docker stop todo-app-new
               docker rm todo-app-new
 
-              docker run -d --name todo-app -p 8000:8000 $IMAGE_NAME:$IMAGE_TAG
+              docker run -d --name todo-app -p 8000:3001 --restart always $IMAGE_NAME:$IMAGE_TAG
+
+              echo "Cleaning old images..."
+              docker image prune -af || true
 
           else
-              echo "Health check failed → Rolling back"
+              echo "Health check failed → rollback"
 
-              docker stop todo-app-new || true
-              docker rm todo-app-new || true
+              docker rm -f todo-app-new || true
 
               if [ ! -z "$PREVIOUS" ]; then
-                docker run -d --name todo-app -p 8000:8000 $PREVIOUS
+                docker run -d --name todo-app -p 8000:3001 --restart always $PREVIOUS
+              else
+                echo "No previous image found!"
               fi
 
               exit 1
