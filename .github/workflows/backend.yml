@@ -71,14 +71,14 @@ jobs:
 
           echo "Waiting for health check..."
           for i in {1..20}; do
-            if curl -f http://localhost:8001/health > /dev/null; then
+            if curl -f http://18.203.231.12:8000/health > /dev/null; then
               echo "Health check passed"
               break
             fi
             sleep 3
           done
 
-          if curl -f http://localhost:8001/health > /dev/null; then
+          if curl -f http://18.203.231.12:8000/health > /dev/null; then
               echo "Deploy success → switching containers"
 
               docker stop todo-app || true
@@ -87,7 +87,7 @@ jobs:
               docker stop todo-app-new
               docker rm todo-app-new
 
-              docker run -d --name todo-app -p 8000:3001 --restart always $IMAGE_NAME:$IMAGE_TAG
+              docker run -d --name todo-app -p 8000:8000 --restart always $IMAGE_NAME:$IMAGE_TAG
 
               echo "Cleaning old images..."
               docker image prune -af || true
@@ -98,7 +98,7 @@ jobs:
               docker rm -f todo-app-new || true
 
               if [ ! -z "$PREVIOUS" ]; then
-                docker run -d --name todo-app -p 8000:3001 --restart always $PREVIOUS
+                docker run -d --name todo-app -p 8000:8000 --restart always $IMAGE_NAME:$IMAGE_TAG
               else
                 echo "No previous image found!"
               fi
