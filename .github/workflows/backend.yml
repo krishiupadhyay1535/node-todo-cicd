@@ -3,7 +3,7 @@ name: Backend CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 
 env:
   IMAGE_NAME: krishi2210/todo-app
@@ -50,36 +50,40 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       # 8. Deploy
-      - name: Deploy with Rollback
+      - name: Deploy with Version + Rollback
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << EOF
 
           IMAGE_NAME=krishi2210/todo-app
           IMAGE_TAG=${{ github.run_number }}
 
-          echo "Cleanup old temp container..."
+          echo "🚀 Deploying version: $IMAGE_TAG"
+
+          # cleanup temp container if exists
           docker rm -f todo-app-new || true
 
-          echo "Pull latest image..."
+          echo "📦 Pulling image..."
           docker pull $IMAGE_NAME:$IMAGE_TAG
 
-          echo "Saving previous image..."
+          echo "💾 Saving previous image..."
           PREVIOUS=$(docker inspect todo-app --format='{{.Config.Image}}' 2>/dev/null)
 
-          echo "Starting new container (canary)..."
-          docker run -d --name todo-app-new -p 8001:3001 --restart always $IMAGE_NAME:$IMAGE_TAG
+          echo "🧪 Starting canary container..."
+          docker run -d --name todo-app-new -p 8001:8000 --restart always $IMAGE_NAME:$IMAGE_TAG
 
-          echo "Waiting for health check..."
+          echo "⏳ Waiting for app to be ready..."
+          sleep 5
+
           for i in {1..20}; do
-            if curl -f http://18.203.231.12:8000/health > /dev/null; then
-              echo "Health check passed"
+            if curl -f http://localhost:8001/health > /dev/null; then
+              echo "✅ Health check passed"
               break
             fi
-            sleep 3
+            sleep 2
           done
 
-          if curl -f http://18.203.231.12:8000/health > /dev/null; then
-              echo "Deploy success → switching containers"
+          if curl -f http://localhost:8001/health > /dev/null; then
+              echo "🎯 Switching to new version..."
 
               docker stop todo-app || true
               docker rm todo-app || true
@@ -89,18 +93,20 @@ jobs:
 
               docker run -d --name todo-app -p 8000:8000 --restart always $IMAGE_NAME:$IMAGE_TAG
 
-              echo "Cleaning old images..."
-              docker image prune -af || true
+              echo "🧹 Cleaning unused containers..."
+              docker container prune -f || true
 
           else
-              echo "Health check failed → rollback"
+              echo "❌ Health check failed → rollback"
 
+              docker logs todo-app-new || true
               docker rm -f todo-app-new || true
 
               if [ ! -z "$PREVIOUS" ]; then
-                docker run -d --name todo-app -p 8000:8000 --restart always $IMAGE_NAME:$IMAGE_TAG
+                echo "🔁 Rolling back to $PREVIOUS"
+                docker run -d --name todo-app -p 8000:8000 --restart always $PREVIOUS
               else
-                echo "No previous image found!"
+                echo "⚠️ No previous version found!"
               fi
 
               exit 1
